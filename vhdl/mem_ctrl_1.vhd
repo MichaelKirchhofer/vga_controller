@@ -26,7 +26,7 @@ entity mem_ctrl_1 is
 	port ( 
 		reset_i : in std_logic;
 		clk_25hz_i : in std_logic;
-		rgb_data_i : in std_logic_vector (11 downto 0);
+		rom_data_i : in std_logic_vector (11 downto 0);
 		h_sync_i : in integer range 0 to (c_h_frame_duration-1);
 		v_sync_i : in integer range 0 to (c_v_frame_duration-1);
 		

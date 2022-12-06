@@ -19,6 +19,7 @@
 
 library IEEE;
 use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 use work.vga_const_pkg.all;
 
 architecture rtl of mem_ctrl_1 is
@@ -27,6 +28,7 @@ architecture rtl of mem_ctrl_1 is
 	signal s_red : std_logic_vector (3 downto 0);
 	signal s_blue : std_logic_vector(3 downto 0);
 	signal s_rom_addr : std_logic_vector (15 downto 0);
+	signal s_rom_data : std_logic_vector (11 downto 0);
 	
 	-- Slow down signal switch by one clock cycle
 	signal s_enable_input_switch : std_logic;
@@ -42,7 +44,7 @@ begin
 
 	p_mem_ctrl_1 : process (reset_i,clk_25hz_i)
 	
-	variable v_pix_addr : natural range 0 to c_rom_elem;
+	variable v_rom_addr : natural range 0 to c_rom_elem;
 	
 	begin
 		
@@ -55,22 +57,49 @@ begin
 		
 		elsif clk_25hz_i = '1' then
 			
-			--Picture 1 Upper / Left
-			if(h_sync_i >= c_h_backp - c_pix_offset and h_sync_i < c_h_vis /2) then
-				if ( v_sync_i >= c_v_backp - c_pix_offset and v_sync_i < c_v_vis / 2) then
+			
+			if(h_sync_i >= c_h_backp  and h_sync_i < c_h_vis /2 ) then
 				
-				elsif (v_sync_i >= c_v_vis - c_pix_offset) then
-				
+				--Picture 1 Upper / Left
+				if ( v_sync_i >= c_v_backp  and v_sync_i < c_v_backp + c_v_vis / 2  ) then
+					
+					v_rom_addr := (h_sync_i-c_h_backp) * (v_sync_i-c_v_backp);
+					
+					
+				-- Picture 2 Lower / Left
+				elsif (v_sync_i >= c_v_backp + c_v_vis / 2 ) then
+					
+					v_rom_addr := (h_sync_i - c_h_backp) * ( v_sync_i - c_v_backp - c_v_vis / 2);
+					
 				end if;
 				
-			elsif () then
-			
+			elsif (h_sync_i >= c_h_backp + c_h_vis / 2 ) then
+				
+				--Picture 3 Upper / Right
+				if ( v_sync_i >= c_v_backp  and v_sync_i < c_v_backp + c_v_vis / 2  ) then
+					
+					v_rom_addr := (h_sync_i - c_h_backp - c_h_vis / 2) * (v_sync_i - c_v_backp);
+					
+				-- Picture 2 Lower / Right
+				elsif (v_sync_i >= c_v_backp + c_v_vis / 2 ) then
+					
+					v_rom_addr := (h_sync_i - c_h_backp - c_h_vis / 2) * (v_sync_i - c_v_backp - c_v_vis / 2);
+					
+				end if;
+				
 			end if;
+			
+			s_rom_addr <= std_logic_vector(to_unsigned(v_rom_addr,s_rom_addr'length));
+			
+			s_red <= rom_data_i(11 downto 8);
+			s_green <= rom_data_i(7 downto 4);
+			s_blue <= rom_data_i(3 downto 0);
 			
 		end if;
 		
 	end process;
-		
+	
+	rom_addr_o <= s_rom_addr;
 	red_o <= s_red;
 	green_o <= s_green;
 	blue_o <= s_blue;
