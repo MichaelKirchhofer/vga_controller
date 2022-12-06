@@ -1,0 +1,14 @@
+vcom ../vhdl/vga_const_pkg.vhd
+vcom ../vhdl/io_ctrl.vhd
+vcom ../vhdl/io_ctrl_rtl.vhd
+vcom ../vhdl/pat_gen_1.vhd
+vcom ../vhdl/pat_gen_1_rtl.vhd
+vcom ../vhdl/pat_gen_2.vhd
+vcom ../vhdl/pat_gen_2_rtl.vhd
+vcom ../vhdl/src_mux.vhd
+vcom ../vhdl/src_mux_rtl.vhd
+vcom ../vhdl/mem_ctrl_1.vhd
+vcom ../vhdl/mem_ctrl_1_rtl.vhd
+vcom ../tb/tb_pat_gen_1.vhd
+vcom ../tb/tb_pat_gen_2.vhd
+vcom ../tb/tb_src_mux.vhd
