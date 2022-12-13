@@ -50,7 +50,8 @@ architecture sim of tb_src_mux is
 			
 			red_o : out std_logic_vector (3 downto 0);
 			green_o : out std_logic_vector (3 downto 0);
-			blue_o : out std_logic_vector (3 downto 0) 
+			blue_o : out std_logic_vector (3 downto 0);
+			movable_obj_o : out std_logic
 		);
 	end component;
 	
@@ -77,6 +78,8 @@ architecture sim of tb_src_mux is
 	signal	s_r_mem_ctrl_2_i : std_logic_vector (3 downto 0) := "1010";
 	signal	s_g_mem_ctrl_2_i : std_logic_vector (3 downto 0) := "1010";
 	signal	s_b_mem_ctrl_2_i : std_logic_vector (3 downto 0) := "1010";
+	
+	signal s_movable_obj 	 : std_logic;
 	
 	
 	begin
@@ -129,32 +132,32 @@ architecture sim of tb_src_mux is
 			-- Pattern generator 1 to be driven out
 			s_swsync_i <= "000";
 			wait for 1 ms;
-			assert (s_red_o = "1111" and s_green_o = "1111" and s_blue_o = "1111")
-				report "The value of pattern generator 1 is not driven correctly to the output pins!"
+			assert (s_red_o = "1111" and s_green_o = "1111" and s_blue_o = "1111" and s_movable_obj = '0')
+				report "The value of pattern generator 1 is not driven correctly to the output pins AND/OR Movable object flag has been set!"
 					severity ERROR;
 			wait for 1 ms;
 			
 			-- Pattern generator 2 to be driven out
-			s_swsync_i <= "001";
+			s_swsync_i <= "010";
 			wait for 1 ms;
-			assert (s_red_o = "0000" and s_green_o = "0000" and s_blue_o = "0000")
-				report "The value of pattern generator 2 is not driven correctly to the output pins!"
+			assert (s_red_o = "0000" and s_green_o = "0000" and s_blue_o = "0000" and s_movable_obj = '0')
+				report "The value of pattern generator 2 is not driven correctly to the output pins AND/OR Movable object flag has been set!"
 					severity ERROR;			
 			wait for 1 ms;
 			
 			-- Memory control unit 1 to be driven out
-			s_swsync_i <= "010";
+			s_swsync_i <= "001";
 			wait for 1 ms;
-			assert (s_red_o = "0101" and s_green_o = "0101" and s_blue_o = "0101")
-				report "The value of the memory control 1 input is not driven correctly to the output pins!"
+			assert (s_red_o = "0101" and s_green_o = "0101" and s_blue_o = "0101" and s_movable_obj = '0')
+				report "The value of the memory control 1 input is not driven correctly to the output pins AND/OR Movable object flag has been set!"
 					severity ERROR;
 			wait for 1 ms;
 			
 			-- Memory control unit 2 to be driven out
 			s_swsync_i <= "100";
 			wait for 1 ms;
-			assert (s_red_o = "1010" and s_green_o = "1010" and s_blue_o = "1010")
-				report "The value of the memory control 2 input is not driven correctly to the output pins!"
+			assert (s_red_o = "1010" and s_green_o = "1010" and s_blue_o = "1010" and s_movable_obj = '1')
+				report "The value of the memory control 2 input is not driven correctly to the output pins AND/OR Movable object flag has not been set!"
 					severity ERROR;	
 			wait;
 			

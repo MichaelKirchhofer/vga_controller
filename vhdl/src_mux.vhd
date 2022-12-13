@@ -27,7 +27,11 @@ entity src_mux is
 	port ( 
 		reset_i : in std_logic;
 		clk_25hz_i : in std_logic;
+		h_sync_i : in integer range 0 to (c_h_frame_duration-1);
+		v_sync_i : in integer range 0 to (c_v_frame_duration-1);
+		
 		swsync_i : in std_logic_vector (2 downto 0);
+		pbsync_i : in std_logic_vector (3 downto 0);
 		
 		r_pat_gen_1_i : in std_logic_vector (3 downto 0);
 		g_pat_gen_1_i : in std_logic_vector (3 downto 0);
