@@ -30,21 +30,13 @@ architecture rtl of mem_ctrl_1 is
 	signal s_rom_addr : std_logic_vector (15 downto 0);
 	signal s_rom_data : std_logic_vector (11 downto 0);
 	
-	-- Slow down signal switch by one clock cycle
-	signal s_enable_input_switch : std_logic;
-	
-	type t_src_mux_state is (MEM1,MEM2,PAT_GEN1,PAT_GEN2);
-
-	signal s_src_mux_state : t_src_mux_state;
-	
-	constant c_rom_elem : natural := 76800;
-	
+	constant c_last_rom_addr : natural := 76800;
 	
 begin
 
 	p_mem_ctrl_1 : process (reset_i,clk_25hz_i)
 	
-	variable v_rom_addr : natural range 0 to c_rom_elem;
+	variable v_rom_addr : natural range 0 to c_last_rom_addr;
 	
 	begin
 		
@@ -54,6 +46,7 @@ begin
 			s_green <= (others => '0');
 			s_blue <= (others => '0');
 			s_rom_addr <= (others => '0');
+			s_rom_data <= (others => '0');
 		
 		elsif clk_25hz_i = '1' then
 			

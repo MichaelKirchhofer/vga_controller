@@ -4,11 +4,11 @@
 --
 -- Filename: tb_pat_gen_2.vhd
 --
--- Date of Creation: 21.11.2022
+-- Date of Creation: 08.12.2022
 --
 -- Version: V 1.0
 --
--- Date of Latest Version: 29.11.2022
+-- Date of Latest Version: 13.12.2022
 --
 -- Design Unit: Pattern generator 1 (Testbench)
 --
@@ -20,16 +20,18 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use work.vga_const_pkg.all;
 
-entity tb_src_mux is
-end tb_src_mux;
-
 architecture sim of tb_src_mux is
 	
 	component src_mux
 		port (
 			reset_i : in std_logic;
 			clk_25hz_i : in std_logic;
+			
 			swsync_i : in std_logic_vector (2 downto 0);
+			pbsync_i : in std_logic_vector (3 downto 0);
+			
+			h_sync_i : in natural range 0 to (c_h_frame_duration-1);
+			v_sync_i : in natural range 0 to (c_v_frame_duration-1);
 			
 			r_pat_gen_1_i : in std_logic_vector (3 downto 0);
 			g_pat_gen_1_i : in std_logic_vector (3 downto 0);
@@ -47,17 +49,23 @@ architecture sim of tb_src_mux is
 			g_mem_ctrl_2_i : in std_logic_vector (3 downto 0);
 			b_mem_ctrl_2_i : in std_logic_vector (3 downto 0);
 			
-			
 			red_o : out std_logic_vector (3 downto 0);
 			green_o : out std_logic_vector (3 downto 0);
 			blue_o : out std_logic_vector (3 downto 0);
-			movable_obj_o : out std_logic
+			x_pos_o : out natural range 0 to (c_h_vis - 100);
+			y_pos_o : out natural range 0 to (c_v_vis - 100)
 		);
 	end component;
 	
 	signal s_clk_i 			: std_logic;
 	signal s_reset_i		: std_logic;
 	signal s_swsync_i		: std_logic_vector (2 downto 0);
+	signal s_pbsync_i		: std_logic_vector(3 downto 0);
+	
+	signal s_h_sync_i		: natural;
+	signal s_v_sync_i		: natural;
+	signal s_x_pos			: natural;
+	signal s_y_pos			: natural;
 	
 	signal s_red_o 			: std_logic_vector (3 downto 0);
 	signal s_green_o 		: std_logic_vector ( 3 downto 0);
@@ -79,8 +87,6 @@ architecture sim of tb_src_mux is
 	signal	s_g_mem_ctrl_2_i : std_logic_vector (3 downto 0) := "1010";
 	signal	s_b_mem_ctrl_2_i : std_logic_vector (3 downto 0) := "1010";
 	
-	signal s_movable_obj 	 : std_logic;
-	
 	
 	begin
 		
@@ -90,6 +96,9 @@ architecture sim of tb_src_mux is
 			reset_i => s_reset_i,
 			clk_25hz_i => s_clk_i,
 			swsync_i => s_swsync_i,
+			pbsync_i => s_pbsync_i,
+			h_sync_i => s_h_sync_i,
+			v_sync_i => s_v_sync_i,
 			red_o => s_red_o,
 			green_o => s_green_o,
 			blue_o => s_blue_o,
@@ -104,8 +113,9 @@ architecture sim of tb_src_mux is
 			b_mem_ctrl_1_i =>  s_b_mem_ctrl_1_i,
 			r_mem_ctrl_2_i => s_r_mem_ctrl_2_i,
 			g_mem_ctrl_2_i => s_g_mem_ctrl_2_i,
-			b_mem_ctrl_2_i => s_b_mem_ctrl_2_i
-			
+			b_mem_ctrl_2_i => s_b_mem_ctrl_2_i,
+			x_pos_o => s_x_pos,
+			y_pos_o => s_y_pos
 		);
 	
 		--25Mhz clock
@@ -132,7 +142,7 @@ architecture sim of tb_src_mux is
 			-- Pattern generator 1 to be driven out
 			s_swsync_i <= "000";
 			wait for 1 ms;
-			assert (s_red_o = "1111" and s_green_o = "1111" and s_blue_o = "1111" and s_movable_obj = '0')
+			assert (s_red_o = "1111" and s_green_o = "1111" and s_blue_o = "1111")
 				report "The value of pattern generator 1 is not driven correctly to the output pins AND/OR Movable object flag has been set!"
 					severity ERROR;
 			wait for 1 ms;
@@ -140,7 +150,7 @@ architecture sim of tb_src_mux is
 			-- Pattern generator 2 to be driven out
 			s_swsync_i <= "010";
 			wait for 1 ms;
-			assert (s_red_o = "0000" and s_green_o = "0000" and s_blue_o = "0000" and s_movable_obj = '0')
+			assert (s_red_o = "0000" and s_green_o = "0000" and s_blue_o = "0000")
 				report "The value of pattern generator 2 is not driven correctly to the output pins AND/OR Movable object flag has been set!"
 					severity ERROR;			
 			wait for 1 ms;
@@ -148,7 +158,7 @@ architecture sim of tb_src_mux is
 			-- Memory control unit 1 to be driven out
 			s_swsync_i <= "001";
 			wait for 1 ms;
-			assert (s_red_o = "0101" and s_green_o = "0101" and s_blue_o = "0101" and s_movable_obj = '0')
+			assert (s_red_o = "0101" and s_green_o = "0101" and s_blue_o = "0101")
 				report "The value of the memory control 1 input is not driven correctly to the output pins AND/OR Movable object flag has been set!"
 					severity ERROR;
 			wait for 1 ms;
@@ -156,7 +166,7 @@ architecture sim of tb_src_mux is
 			-- Memory control unit 2 to be driven out
 			s_swsync_i <= "100";
 			wait for 1 ms;
-			assert (s_red_o = "1010" and s_green_o = "1010" and s_blue_o = "1010" and s_movable_obj = '1')
+			assert (s_red_o = "1010" and s_green_o = "1010" and s_blue_o = "1010")
 				report "The value of the memory control 2 input is not driven correctly to the output pins AND/OR Movable object flag has not been set!"
 					severity ERROR;	
 			wait;

@@ -8,12 +8,14 @@
 --
 -- Version: V 1.0
 --
--- Date of Latest Version: 06.12.2022
+-- Date of Latest Version: 13.12.2022
 --
 -- Design Unit: VGA Source Multiplexer (Architecture)
 --
--- Description: The source multiplexer switches the display inputs according to
--- the switch position on the fpga board
+-- Description: Drives out the RGB color signal to the VGA Controller Unit
+-- according to the switch positions on the fpga. It is also responsible for
+-- the parsing of the push buttons and the positional changes of the displayed
+-- picture from the memory control unit 2.
 --
 -------------------------------------------------------------------------------
 
@@ -33,6 +35,8 @@ architecture rtl of src_mux is
 	signal s_y_pos : natural := 120;
 	
 	constant c_pic_dim : natural := 100;
+	constant c_def_x_pos : natural := 160;
+	constant c_def_y_pos : natural := 120;
 	
 	-- Slow down signal switch by one clock cycle
 	signal s_enable_input_switch : std_logic;
@@ -40,18 +44,6 @@ architecture rtl of src_mux is
 	type t_src_mux_state is (MEM_CTRL,PAT_GEN1,PAT_GEN2);
 
 	signal s_src_mux_state : t_src_mux_state;
-	
-	procedure p_pars_pbsync (
-		signal r_IN  : in  std_logic_vector(7 downto 0);
-		signal r_OUT : out std_logic_vector(7 downto 0)
-		) 
-	is
-	
-	begin
-		
-		
-	end p_INCREMENT_SLV;
-	
 	
 begin
 	
@@ -65,8 +57,8 @@ begin
 			s_red 	<=	(others => '0');
 			s_green <= 	(others => '0');
 			s_blue	<= 	(others => '0');
-			s_x_pos <= 160;
-			s_y_pos <= 120;
+			s_x_pos <= c_def_x_pos;
+			s_y_pos <= c_def_y_pos;
 		
 		elsif clk_25hz_i = '1' then
 		
@@ -89,12 +81,31 @@ begin
 					
 					if swsync_i(2) = '1' then
 						
-						if hsync_i >= s_x_pos and hsync_i < s_x_pos + c_pic_dim then
+						case pbsync_i is 
+							-- BTNL
+							when "1000" =>
+								s_x_pos <= s_x_pos - 10;
+							-- BTNU
+							when "0100" =>
+								s_y_pos <= s_y_pos + 10;
+							-- BTNR	
+							when "0010" =>
+							-- BTND
+								s_x_pos <= s_x_pos + 10;
+							when "0001" =>
+								s_y_pos <= s_y_pos - 10;
 							
-							if vsync_i >= s_y_pos and vsync_i < s_y_pos + c_pic_dim then
+							when others =>
+								s_y_pos <= s_y_pos;
+								s_x_pos <= s_x_pos;
+						end case;
+						
+						if h_sync_i >= s_x_pos and h_sync_i < s_x_pos + c_pic_dim then
+							
+							if v_sync_i >= s_y_pos and v_sync_i < s_y_pos + c_pic_dim then
 	
 								s_red <= r_mem_ctrl_2_i;
-								s_green <= g_mem_ctr_2_i;
+								s_green <= g_mem_ctrl_2_i;
 								s_blue <= b_mem_ctrl_2_i;
 							
 							end if;	
@@ -105,7 +116,9 @@ begin
 							s_blue 	<= b_pat_gen_1_i;
 						end if;
 						
-					else 
+					else
+						s_x_pos <= c_def_x_pos;
+						s_y_pos <= c_def_y_pos;
 						s_red 	<= r_pat_gen_1_i;
 						s_green <= g_pat_gen_1_i;
 						s_blue 	<= b_pat_gen_1_i;
@@ -114,13 +127,32 @@ begin
 				when PAT_GEN2 =>
 					
 					if swsync_i(2) = '1' then
-					
-						if hsync_i >= s_x_pos and hsync_i < s_x_pos + c_pic_dim then
+						
+						case pbsync_i is 
+							-- BTNL
+							when "1000" =>
+								s_x_pos <= s_x_pos - 10;
+							-- BTNU
+							when "0100" =>
+								s_y_pos <= s_y_pos + 10;
+							-- BTNR	
+							when "0010" =>
+							-- BTND
+								s_x_pos <= s_x_pos + 10;
+							when "0001" =>
+								s_y_pos <= s_y_pos - 10;
 							
-							if vsync_i >= s_y_pos and vsync_i < s_y_pos + c_pic_dim then
+							when others =>
+								s_y_pos <= s_y_pos;
+								s_x_pos <= s_x_pos;
+						end case;
+						
+						if h_sync_i >= s_x_pos and h_sync_i < s_x_pos + c_pic_dim then
+							
+							if v_sync_i >= s_y_pos and v_sync_i < s_y_pos + c_pic_dim then
 	
 								s_red <= r_mem_ctrl_2_i;
-								s_green <= g_mem_ctr_2_i;
+								s_green <= g_mem_ctrl_2_i;
 								s_blue <= b_mem_ctrl_2_i;
 							
 							end if;	
@@ -131,17 +163,19 @@ begin
 							s_blue 	<= b_pat_gen_2_i;
 						end if;
 					
-					else 
+					else
+						s_x_pos <= c_def_x_pos;
+						s_y_pos <= c_def_y_pos;
 						s_red 	<= r_pat_gen_2_i;
 						s_green <= g_pat_gen_2_i;
 						s_blue 	<= b_pat_gen_2_i;
 					end if;	
 					
-				when MEM_CTRL =>
+					when MEM_CTRL =>
 						s_red 	<= r_mem_ctrl_1_i;
 						s_green <= g_mem_ctrl_1_i;
 						s_blue 	<= b_mem_ctrl_1_i;
-					end if;
+					
 					
 				when others =>
 				
@@ -158,5 +192,7 @@ begin
 	red_o <= s_red;
 	green_o <= s_green;
 	blue_o <= s_blue;
+	x_pos_o <= s_x_pos;
+	y_pos_o <= s_y_pos;
 
 end rtl;
