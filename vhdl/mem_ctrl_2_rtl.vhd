@@ -20,6 +20,7 @@
 
 library IEEE;
 use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 use work.vga_const_pkg.all;
 
 architecture rtl of mem_ctrl_2 is
@@ -30,13 +31,14 @@ architecture rtl of mem_ctrl_2 is
 	signal s_rom_addr : std_logic_vector (15 downto 0);
 	signal s_rom_data : std_logic_vector (11 downto 0);
 	
-	constant c_last_rom_addr : natural := 76800;
+	constant c_last_rom_addr : natural := 9999;
 	
 begin
 
 	p_mem_ctrl_2 : process(reset_i,clk_25hz_i)
 	
 	variable v_rom_addr : natural range 0 to c_last_rom_addr;
+	
 	
 	begin
 		
@@ -50,17 +52,44 @@ begin
 		
 		elsif clk_25hz_i = '1' then
 			
-			if h_sync_i
-		
+			-- Sync signal indicates that the picture is currently requested to be displayed
+			if (h_sync_i >= x_pos_i and h_sync_i < (x_pos_i+c_pic_dim)) then
+				
+				if(v_sync_i >= y_pos_i and v_sync_i < (y_pos_i+c_pic_dim)) then
+					
+					if( v_rom_addr = c_last_rom_addr) then
+					
+						v_rom_addr := 0;
+					
+					else
+					
+						v_rom_addr := v_rom_addr + 1;
+					
+					end if;
+					
+				else
+				
+					v_rom_addr := v_rom_addr;
+					
+				end if;
+				
+			else
+				
+				v_rom_addr := v_rom_addr;
+
+			end if;
+			
+			s_rom_addr <= std_logic_vector(to_unsigned(v_rom_addr,s_rom_addr'length));
+			s_red <= rom_data_i (11 downto 8);
+			s_green <= rom_data_i (7 downto 4);
+			s_blue <= rom_data_i (3 downto 0);
+			
 		end if;
-		
-		
+	
 	end process;
 	
 	rom_addr_o <= s_rom_addr;
 	red_o <= s_red;
 	green_o <= s_green;
 	blue_o <= s_blue;
-	rom_addr_o <= s_rom_addr;
-	
 end rtl;

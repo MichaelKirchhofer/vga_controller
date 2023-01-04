@@ -31,12 +31,8 @@ architecture rtl of src_mux is
 	signal s_red : std_logic_vector (3 downto 0);
 	signal s_blue : std_logic_vector(3 downto 0);
 	
-	signal s_x_pos : natural := 160;
-	signal s_y_pos : natural := 120;
-	
-	constant c_pic_dim : natural := 100;
-	constant c_def_x_pos : natural := 160;
-	constant c_def_y_pos : natural := 120;
+	signal s_x_pos : natural := c_def_x_pos;
+	signal s_y_pos : natural := c_def_y_pos;
 	
 	-- Slow down signal switch by one clock cycle
 	signal s_enable_input_switch : std_logic;
@@ -84,17 +80,35 @@ begin
 						case pbsync_i is 
 							-- BTNL
 							when "1000" =>
-								s_x_pos <= s_x_pos - 10;
+								
+								if s_x_pos > c_pic_hop_pix then
+									s_x_pos <= 0;
+								else
+									s_x_pos <= s_x_pos - c_pic_hop_pix;
+								end if;
 							-- BTNU
 							when "0100" =>
-								s_y_pos <= s_y_pos + 10;
+								if s_y_pos < (c_v_vis - 100) then
+									s_y_pos <= s_y_pos + c_pic_hop_pix; 
+								else
+									s_y_pos <= s_y_pos;
+								end if;
+								
 							-- BTNR	
 							when "0010" =>
 							-- BTND
-								s_x_pos <= s_x_pos + 10;
+								if s_x_pos < (c_h_vis - 100) then
+									s_x_pos <= s_x_pos + c_pic_hop_pix;
+								else
+									s_x_pos <= s_x_pos;
+								end if;	
 							when "0001" =>
-								s_y_pos <= s_y_pos - 10;
-							
+								if s_y_pos > c_pic_hop_pix then
+								
+									s_y_pos <= s_y_pos - c_pic_hop_pix;
+								else
+									s_y_pos <= s_y_pos;
+								end if;
 							when others =>
 								s_y_pos <= s_y_pos;
 								s_x_pos <= s_x_pos;

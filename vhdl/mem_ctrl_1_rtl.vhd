@@ -28,9 +28,8 @@ architecture rtl of mem_ctrl_1 is
 	signal s_red : std_logic_vector (3 downto 0);
 	signal s_blue : std_logic_vector(3 downto 0);
 	signal s_rom_addr : std_logic_vector (15 downto 0);
-	signal s_rom_data : std_logic_vector (11 downto 0);
 	
-	constant c_last_rom_addr : natural := 76800;
+	constant c_last_rom_addr : natural := 76799;
 	
 begin
 
@@ -46,7 +45,6 @@ begin
 			s_green <= (others => '0');
 			s_blue <= (others => '0');
 			s_rom_addr <= (others => '0');
-			s_rom_data <= (others => '0');
 		
 		elsif clk_25hz_i = '1' then
 			
@@ -96,6 +94,5 @@ begin
 	red_o <= s_red;
 	green_o <= s_green;
 	blue_o <= s_blue;
-	rom_addr_o <= s_rom_addr;
 
 end rtl;

@@ -1,0 +1,27 @@
+#-----------------------------------------------------------
+# Vivado v2016.1 (64-bit)
+# SW Build 1538259 on Fri Apr  8 15:45:27 MDT 2016
+# IP Build 1537824 on Fri Apr  8 04:28:57 MDT 2016
+# Start of session at: Tue Jan 03 16:51:11 2023
+# Process ID: 22140
+# Current directory: C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/managed_ip_project
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent18392 C:\Users\Michael\Desktop\Elektronik\Wintersemester_2022\CHIP\vga_controller\generate\managed_ip_project\managed_ip_project.xpr
+# Log file: C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/managed_ip_project/vivado.log
+# Journal file: C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/managed_ip_project\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/managed_ip_project/managed_ip_project.xpr
+INFO: [ProjectBase 1-489] The host OS only allows 260 characters in a normal path. The project is stored in a path with more than 80 characters. If you experience issues with IP, Block Designs, or files not being found, please consider moving the project to a location with a shorter path. Alternately consider using the OS subst command to map part of the path to a drive letter.
+Current project path is 'C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/managed_ip_project'
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2016.1/data/ip'.
+INFO: [xilinx.com:ip:clk_wiz:5.3-1] clk_wiz_0: divN_0 10 phase_0 0.000 dutyCycle_0 0.500 
+INFO: [xilinx.com:ip:clk_wiz:5.3-9] clk_wiz_0: value_5 0x00c0
+INFO: [xilinx.com:ip:clk_wiz:5.3-111] clk_wiz_0: value_0 1145 0000 0000
+INFO: [xilinx.com:ip:clk_wiz:5.3-222] clk_wiz_0: value_0 0x0000
+INFO: [xilinx.com:ip:clk_wiz:5.3-333] clk_wiz_0: value 00c0
+exit
+INFO: [Common 17-206] Exiting Vivado at Tue Jan 03 16:57:51 2023...

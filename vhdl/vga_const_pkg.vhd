@@ -40,4 +40,10 @@ constant c_v_frame_duration : natural := c_v_vis + c_v_frontp + c_v_sync_t + c_v
 -- offset for picture loading and timing reasons
 constant c_pix_offset : natural := 2;
 
+-- mem ctrl 2 picture constants
+constant c_pic_dim : natural := 100;
+constant c_def_x_pos : natural := 160;
+constant c_def_y_pos : natural := 120;
+constant c_pic_hop_pix : natural := 10;
+
 end;

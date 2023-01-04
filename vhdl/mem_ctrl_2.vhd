@@ -30,7 +30,8 @@ entity mem_ctrl_2 is
 		rom_data_i : in std_logic_vector (11 downto 0);
 		h_sync_i : in natural range 0 to (c_h_frame_duration-1);
 		v_sync_i : in natural range 0 to (c_v_frame_duration-1);
-		x_pos_i : in natural
+		x_pos_i : in natural range 0 to (c_h_vis-1);
+		y_pos_i : in natural range 0 to (c_v_vis-1);
 		rom_addr_o : out std_logic_vector (15 downto 0);
 		red_o : out std_logic_vector (3 downto 0);
 		green_o : out std_logic_vector (3 downto 0);
