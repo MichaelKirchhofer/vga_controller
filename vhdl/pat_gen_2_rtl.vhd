@@ -6,9 +6,9 @@
 --
 -- Date of Creation: 28.11.2022
 --
--- Version: V 1.0
+-- Version: V 1.3
 --
--- Date of Latest Version: 28.11.2022
+-- Date of Latest Version: 22.01.2023
 --
 -- Design Unit: Pattern Generator (Architecture)
 --
@@ -38,8 +38,6 @@ begin
 
 	p_pat_gen_2 : process (reset_i,clk_25hz_i)
 	
-		variable v_px_count : natural := 0;
-	
 	begin
 		
 		if reset_i = '1' then
@@ -49,27 +47,25 @@ begin
 			s_green <= 	(others => '0');
 			s_blue	<= 	(others => '0');
 		
-		elsif clk_25hz_i = '1' then
+		elsif clk_25hz_i'event and clk_25hz_i = '1' then
 			
-			-- 48 pix per color with 2 pix grace period
-			if (v_sync_i >= 31 and v_sync_i < 79) or (v_sync_i >= 175 and v_sync_i < 223) or (v_sync_i >= 319 and v_sync_i < 361) or v_sync_i >= 463 then
+			-- Set line state machine according to the vertical input signal
+			if (v_sync_i > 0 and v_sync_i <= 48) or (v_sync_i > 144 and v_sync_i <= 192) or (v_sync_i > 288 and v_sync_i <= 336) or (v_sync_i > 432 and v_sync_i <= 480) or v_sync_i >= 576 then
 			
 				s_gen_line_state <= LINE_RED;
 				
-			elsif (v_sync_i >= 79 and v_sync_i < 127) or (v_sync_i >= 223 and v_sync_i < 271) or (v_sync_i >= 361 and v_sync_i < 415) then
-
+			elsif (v_sync_i > 48 and v_sync_i <= 96) or (v_sync_i > 192 and v_sync_i <= 240) or (v_sync_i > 336 and v_sync_i <= 384) or (v_sync_i > 480 and v_sync_i <= 528)  then
+			
 				s_gen_line_state <= LINE_GREEN;
 			
-			elsif (v_sync_i >= 127 and v_sync_i < 175) or (v_sync_i >= 271 and v_sync_i < 319) or (v_sync_i >= 415 and v_sync_i < 463) then
+			elsif (v_sync_i > 96 and v_sync_i <= 144) or (v_sync_i > 240 and v_sync_i <= 288) or (v_sync_i > 384 and v_sync_i <= 432) or (v_sync_i > 528 and v_sync_i <= 576)  then
 				
 				s_gen_line_state <= LINE_BLUE;
-			else
-				s_gen_line_state <= s_gen_line_state;
 				
 			end if;
 			
-			-- 64 pix per color with 2 pix of grace period between color switches
-			if (h_sync_i >= 46 and h_sync_i < 110) or (h_sync_i >= 232 and h_sync_i < 302) or (h_sync_i >= 430 and h_sync_i < 494) or h_sync_i >= 622 then
+			-- Set color state machine according to the line state machine and the horizontal input signal
+			if (h_sync_i > 0 and h_sync_i <= 64) or (h_sync_i > 192 and h_sync_i <= 256) or (h_sync_i > 384 and h_sync_i <= 448) or (h_sync_i > 576 and h_sync_i <= 640) or h_sync_i >= 768 then
 				
 				case s_gen_line_state is
 					when LINE_RED =>
@@ -82,7 +78,8 @@ begin
 						s_pat_gen_state <= s_pat_gen_state;
 				end case;		
 				
-			elsif (h_sync_i >= 110 and h_sync_i < 174) or (h_sync_i >= 302 and h_sync_i < 366) or (h_sync_i >= 494 and h_sync_i < 558) then
+			-- Set color state machine according to the line state machine and the horizontal input signal	
+			elsif (h_sync_i > 64 and h_sync_i <= 128) or (h_sync_i > 256 and h_sync_i <= 320) or (h_sync_i > 448 and h_sync_i <= 512) or ( h_sync_i > 640 and h_sync_i <= 704) then
 			
 				case s_gen_line_state is
 					when LINE_RED =>
@@ -94,8 +91,9 @@ begin
 					when others =>
 						s_pat_gen_state <= s_pat_gen_state;
 				end case;
-				
-			elsif (h_sync_i >= 174 and h_sync_i < 232) or (h_sync_i >= 366 and h_sync_i < 430) or (h_sync_i >= 558 and h_sync_i < 622) then
+			
+			-- Set color state machine according to the line state machine and the horizontal input signal
+			elsif (h_sync_i > 128 and h_sync_i <= 192) or (h_sync_i > 320 and h_sync_i <= 384) or (h_sync_i > 512 and h_sync_i <= 576) or (h_sync_i > 704 and h_sync_i <= 768) then
 			
 				case s_gen_line_state is
 					when LINE_RED =>
@@ -107,13 +105,9 @@ begin
 					when others =>
 						s_pat_gen_state <= s_pat_gen_state;
 				end case;
-				
-			else
-				s_pat_gen_state <= s_pat_gen_state;
-				s_gen_line_state <= s_gen_line_state;
 			end if;
 			
-			-- change display color with moving h_sync_i increments
+			-- Color state machine
 			case s_pat_gen_state is
 			
 				when RED =>

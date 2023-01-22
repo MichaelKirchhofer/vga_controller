@@ -6,9 +6,9 @@
 --
 -- Date of Creation: 06.12.2022
 --
--- Version: V 1.0
+-- Version: V 3.2
 --
--- Date of Latest Version: 13.12.2022
+-- Date of Latest Version: 22.01.2023
 --
 -- Design Unit: VGA Source Multiplexer (Architecture)
 --
@@ -31,11 +31,12 @@ architecture rtl of src_mux is
 	signal s_red : std_logic_vector (3 downto 0);
 	signal s_blue : std_logic_vector(3 downto 0);
 	
-	signal s_x_pos : natural := c_def_x_pos;
-	signal s_y_pos : natural := c_def_y_pos;
+	signal s_x_pos : natural;
+	signal s_y_pos : natural;
 	
 	-- Slow down signal switch by one clock cycle
 	signal s_enable_input_switch : std_logic;
+	signal s_btn_rdy : std_logic;
 	
 	type t_src_mux_state is (MEM_CTRL,PAT_GEN1,PAT_GEN2);
 
@@ -45,6 +46,9 @@ begin
 	
 	p_src_mux : process (reset_i,clk_25hz_i) 
 	
+	variable v_x_pos : natural range 0 to 540 := 100;
+	variable v_y_pos : natural range 0 to 380 := 100;
+	
 	begin
 		
 		if reset_i = '1' then
@@ -53,11 +57,62 @@ begin
 			s_red 	<=	(others => '0');
 			s_green <= 	(others => '0');
 			s_blue	<= 	(others => '0');
-			s_x_pos <= c_def_x_pos;
-			s_y_pos <= c_def_y_pos;
+			v_x_pos := c_def_x_pos;
+			v_y_pos := c_def_y_pos;
+			s_btn_rdy <= '1';
 		
-		elsif clk_25hz_i = '1' then
-		
+		elsif clk_25hz_i'event and clk_25hz_i = '1' then
+			
+			-- Parse button input to set new position for the movable object
+			case pbsync_i is 
+				-- BTNL
+				--when "1000" =>
+				when "1000" =>
+					if s_btn_rdy = '1' then
+						s_btn_rdy <= '0';
+						if v_x_pos >= 40 then
+							v_x_pos := v_x_pos - c_pic_hop_pix;
+						else
+							v_x_pos := 0;
+						end if;
+					end if;
+				-- BTNU
+				when "0100" =>
+					if s_btn_rdy = '1' then
+						s_btn_rdy <= '0';
+						if v_y_pos >= 40 then
+							v_y_pos := v_y_pos - c_pic_hop_pix; 
+						else
+							v_y_pos := 0;
+						end if;
+					end if;
+				-- BTNR	when "0010" =>
+				when "0010" =>
+					if s_btn_rdy <= '1' then
+						s_btn_rdy <= '0';
+						if v_x_pos = 540 then
+							v_x_pos := v_x_pos;
+						else
+							v_x_pos := v_x_pos - c_pic_hop_pix;
+						end if;
+					end if;
+				-- BTND
+				when "0001" =>
+					if s_btn_rdy <= '1' then
+						s_btn_rdy <= '0';
+						if v_y_pos = 360 then
+							v_y_pos := v_y_pos;
+						else
+							v_y_pos := v_y_pos + c_pic_hop_pix;
+						end if;
+					end if;	
+				when others =>
+					s_btn_rdy <= '1';
+					v_y_pos := v_y_pos;
+					v_x_pos := v_x_pos;
+			end case;
+			
+			-- Parse switch 1 and 0 to set multiplexer state machine
 			case swsync_i(1 downto 0) is
 				
 				when "00" =>
@@ -70,58 +125,25 @@ begin
 					s_src_mux_state <= s_src_mux_state;
 			end case;
 			
-			
+			-- Multiplexer state machine
 			case s_src_mux_state is 
-			
+				
+				-- Pattern generator 1 input / moveable object over the pattern
 				when PAT_GEN1 =>
 					
 					if swsync_i(2) = '1' then
 						
-						case pbsync_i is 
-							-- BTNL
-							when "1000" =>
-								
-								if s_x_pos > c_pic_hop_pix then
-									s_x_pos <= 0;
-								else
-									s_x_pos <= s_x_pos - c_pic_hop_pix;
-								end if;
-							-- BTNU
-							when "0100" =>
-								if s_y_pos < (c_v_vis - 100) then
-									s_y_pos <= s_y_pos + c_pic_hop_pix; 
-								else
-									s_y_pos <= s_y_pos;
-								end if;
-								
-							-- BTNR	
-							when "0010" =>
-							-- BTND
-								if s_x_pos < (c_h_vis - 100) then
-									s_x_pos <= s_x_pos + c_pic_hop_pix;
-								else
-									s_x_pos <= s_x_pos;
-								end if;	
-							when "0001" =>
-								if s_y_pos > c_pic_hop_pix then
-								
-									s_y_pos <= s_y_pos - c_pic_hop_pix;
-								else
-									s_y_pos <= s_y_pos;
-								end if;
-							when others =>
-								s_y_pos <= s_y_pos;
-								s_x_pos <= s_x_pos;
-						end case;
-						
-						if h_sync_i >= s_x_pos and h_sync_i < s_x_pos + c_pic_dim then
+						if h_sync_i >= v_x_pos and h_sync_i < (v_x_pos + c_pic_dim) then
 							
-							if v_sync_i >= s_y_pos and v_sync_i < s_y_pos + c_pic_dim then
-	
-								s_red <= r_mem_ctrl_2_i;
+							if v_sync_i >= v_y_pos and v_sync_i < (v_y_pos + c_pic_dim)then
+								-- Only display ROM 2 content while inside the x_pos and y_pos coordinates
+								s_red 	<= r_mem_ctrl_2_i;
 								s_green <= g_mem_ctrl_2_i;
-								s_blue <= b_mem_ctrl_2_i;
-							
+								s_blue 	<= b_mem_ctrl_2_i;
+							else
+								s_red 	<= r_pat_gen_1_i;
+								s_green <= g_pat_gen_1_i;
+								s_blue 	<= b_pat_gen_1_i;
 							end if;	
 						
 						else
@@ -131,44 +153,29 @@ begin
 						end if;
 						
 					else
-						s_x_pos <= c_def_x_pos;
-						s_y_pos <= c_def_y_pos;
+						v_x_pos := c_def_x_pos;
+						v_y_pos := c_def_y_pos;
 						s_red 	<= r_pat_gen_1_i;
 						s_green <= g_pat_gen_1_i;
 						s_blue 	<= b_pat_gen_1_i;
 					end if;	
-				
+					
+				-- Pattern generator 2 input / moveable object over the pattern
 				when PAT_GEN2 =>
 					
 					if swsync_i(2) = '1' then
 						
-						case pbsync_i is 
-							-- BTNL
-							when "1000" =>
-								s_x_pos <= s_x_pos - 10;
-							-- BTNU
-							when "0100" =>
-								s_y_pos <= s_y_pos + 10;
-							-- BTNR	
-							when "0010" =>
-							-- BTND
-								s_x_pos <= s_x_pos + 10;
-							when "0001" =>
-								s_y_pos <= s_y_pos - 10;
+						if h_sync_i >= v_x_pos and h_sync_i < (v_x_pos + c_pic_dim) then
 							
-							when others =>
-								s_y_pos <= s_y_pos;
-								s_x_pos <= s_x_pos;
-						end case;
-						
-						if h_sync_i >= s_x_pos and h_sync_i < s_x_pos + c_pic_dim then
-							
-							if v_sync_i >= s_y_pos and v_sync_i < s_y_pos + c_pic_dim then
-	
+							if v_sync_i >= v_y_pos and v_sync_i < (v_y_pos + c_pic_dim) then
+							-- Only display ROM 2 content while inside the x_pos and y_pos coordinates
 								s_red <= r_mem_ctrl_2_i;
 								s_green <= g_mem_ctrl_2_i;
 								s_blue <= b_mem_ctrl_2_i;
-							
+							else
+								s_red 	<= r_pat_gen_2_i;
+								s_green <= g_pat_gen_2_i;
+								s_blue 	<= b_pat_gen_2_i;
 							end if;	
 							
 						else
@@ -178,27 +185,52 @@ begin
 						end if;
 					
 					else
-						s_x_pos <= c_def_x_pos;
-						s_y_pos <= c_def_y_pos;
+						v_x_pos := c_def_x_pos;
+						v_y_pos := c_def_y_pos;
 						s_red 	<= r_pat_gen_2_i;
 						s_green <= g_pat_gen_2_i;
 						s_blue 	<= b_pat_gen_2_i;
 					end if;	
 					
-					when MEM_CTRL =>
+				-- ROM Memory 1 input / moveable object over the ROM contents	
+				when MEM_CTRL =>
+					if swsync_i(2) = '1' then
+					
+					if h_sync_i >= v_x_pos and h_sync_i < (v_x_pos + c_pic_dim) then
+						
+						if v_sync_i >= v_y_pos and v_sync_i < (v_y_pos + c_pic_dim) then
+							-- Only display ROM 2 content while inside the x_pos and y_pos coordinates
+							s_red 	<= r_mem_ctrl_2_i;
+							s_green <= g_mem_ctrl_2_i;
+							s_blue 	<= b_mem_ctrl_2_i;
+						else
+							s_red 	<=  r_mem_ctrl_1_i;
+							s_green <=  g_mem_ctrl_1_i;
+							s_blue 	<=  b_mem_ctrl_1_i;
+						end if;	
+					
+					else
 						s_red 	<= r_mem_ctrl_1_i;
 						s_green <= g_mem_ctrl_1_i;
 						s_blue 	<= b_mem_ctrl_1_i;
+					end if;
 					
+					else
+						v_x_pos := c_def_x_pos;
+						v_y_pos := c_def_y_pos;
+						s_red 	<= r_mem_ctrl_1_i;
+						s_green <= g_mem_ctrl_1_i;
+						s_blue 	<= b_mem_ctrl_1_i;
+					end if;	
 					
 				when others =>
-				
-					s_red <= s_red;
+					s_red 	<= s_red;
 					s_green <= s_green;
-					s_blue <= s_blue;
+					s_blue 	<= s_blue;
 					
 			end case;
-				
+			s_x_pos <= v_x_pos;
+			s_y_pos <= v_y_pos;
 		end if;
 		
 	end process;

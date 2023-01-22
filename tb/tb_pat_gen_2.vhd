@@ -29,8 +29,8 @@ architecture sim of tb_pat_gen_2 is
 		port (
 			reset_i : in std_logic;
 			clk_25hz_i : in std_logic;
-			h_pix_count : in integer range 0 to (c_h_frame_duration-1);
-			v_pix_count : in integer range 0 to (c_v_frame_duration-1);
+			h_sync_i : in integer range 0 to (c_h_frame_duration-1);
+			v_sync_i : in integer range 0 to (c_v_frame_duration-1);
 			red_o : out std_logic_vector (3 downto 0);
 			green_o : out std_logic_vector (3 downto 0);
 			blue_o : out std_logic_vector (3 downto 0)
@@ -53,8 +53,8 @@ architecture sim of tb_pat_gen_2 is
 		port map(
 			reset_i => s_reset_i,
 			clk_25hz_i => s_clk_i,
-			h_pix_count => s_h_pix_count,
-			v_pix_count => s_v_pix_count,
+			h_sync_i => s_h_pix_count,
+			v_sync_i => s_v_pix_count,
 			red_o => s_red_o,
 			green_o => s_green_o,
 			blue_o => s_blue_o
@@ -64,9 +64,9 @@ architecture sim of tb_pat_gen_2 is
 	    p_clock : process
 		begin
 			s_clk_i <= '0';
-			wait for 40 ns;
+			wait for 20 ns;
 			s_clk_i <= '1';
-			wait for 40 ns;
+			wait for 20 ns;
 		end process p_clock;
 		
 		p_reset : process	
@@ -95,9 +95,7 @@ architecture sim of tb_pat_gen_2 is
 				s_h_pix_count <= s_h_pix_count + 1;
 			end if;
 			
-				
-			
-			wait for 80 ns;
+			wait for 40 ns;
 			
 		end process p_pat_gen_1_test;
 

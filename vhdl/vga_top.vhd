@@ -6,9 +6,9 @@
 --
 -- Date of Creation: 06.12.2022
 --
--- Version: V 1.0
+-- Version: V 1.2
 --
--- Date of Latest Version: 13.12.2022
+-- Date of Latest Version: 21.12.2022
 --
 -- Design Unit: VGA top level unit (entity)
 --
@@ -22,7 +22,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use work.vga_const_pkg.all;
 
-entity src_mux is
+entity vga_top is
 
 	port ( 
 			fpga_clk_i : in std_logic;
@@ -36,4 +36,4 @@ entity src_mux is
 			v_sync_flag_o : out std_logic
 		);
 		
-end src_mux;
+end vga_top;

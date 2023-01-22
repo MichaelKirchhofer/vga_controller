@@ -54,8 +54,8 @@ entity src_mux is
 		red_o : out std_logic_vector (3 downto 0);
 		green_o : out std_logic_vector (3 downto 0);
 		blue_o : out std_logic_vector (3 downto 0);
-		x_pos_o : out natural to c_h_vis - 100;
-		y_pos_o : out natural to c_v_vis - 100
+		x_pos_o : out natural;
+		y_pos_o : out natural
 		);
 		
 end src_mux;

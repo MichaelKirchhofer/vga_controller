@@ -1,7 +1,7 @@
 Copyright 1986-2016 Xilinx, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2016.1 (win64) Build 1538259 Fri Apr  8 15:45:27 MDT 2016
-| Date         : Tue Jan 03 16:47:01 2023
+| Date         : Sun Jan 22 21:01:05 2023
 | Host         : DESKTOP-CTQMUAG running 64-bit major release  (build 9200)
 | Command      : report_utilization -file rom_mem_1_utilization_synth.rpt -pb rom_mem_1_utilization_synth.pb
 | Design       : rom_mem_1

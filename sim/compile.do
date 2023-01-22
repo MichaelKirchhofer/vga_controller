@@ -3,8 +3,8 @@
 vlog ../generate/glbl.v
 
 # compile simulation model of generated clock PLL
-vlog ../generate/clk_25Mhz/clkgen_clk_wiz.v
-vlog ../generate/clk_25Mhz/clkgen.v
+vlog ../generate/clk_25Mhz/clk_25Mhz_clk_wiz.v
+vlog ../generate/clk_25Mhz/clk_25Mhz.v
 
 # copy .mif file (which holds content of ROM1) into ModelSim simulation directory
 file copy -force ../generate/rom_mem_1/rom_mem_1.mif ./
@@ -38,7 +38,14 @@ vcom ../vhdl/vga_ctrl.vhd
 vcom ../vhdl/vga_ctrl_rtl.vhd
 vcom ../vhdl/vga_top.vhd
 vcom ../vhdl/vga_top_rtl.vhd
+vcom ../vhdl/vga_top_sim.vhd
+vcom ../vhdl/vga_top_sim_rtl.vhd
 
 # compile testbenches for testing
 vcom ../tb/tb_pat_gen_1.vhd
 vcom ../tb/tb_pat_gen_2.vhd
+vcom ../tb/tb_vga_sim_top.vhd
+vcom ../tb/tb_vga_top.vhd
+vcom ../tb/tb_vga_sim_top.vhd
+vcom ../tb/vga_monitor_.vhd
+vcom ../tb/vga_monitor_sim.vhd  

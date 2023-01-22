@@ -4,17 +4,16 @@
 --
 -- Filename: io_ctrl_rt1.vhd
 --
--- Date of Creation: 26.04.2022
+-- Date of Creation: 12.11.2022
 --
--- Version: V 1.0
+-- Version: V 1.3
 --
--- Date of Latest Version: 26.04.2022
+-- Date of Latest Version: 22.01.2023
 --
 -- Design Unit: IO Control Unit (Architecture)
 --
--- Description: The IO Control unit is part of the calculator project.
--- It manages the interface to the 7-segment displays,
--- the LEDs, the push buttons and the switches of the
+-- Description: The IO Control unit is part of the vga controller,
+-- it manages the push buttons and the switches of the
 -- Digilent Basys3 FPGA board.
 --
 -------------------------------------------------------------------------------

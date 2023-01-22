@@ -6,9 +6,9 @@
 --
 -- Date of Creation: 28.11.2022
 --
--- Version: V 1.0
+-- Version: V 1.3
 --
--- Date of Latest Version: 28.11.2022
+-- Date of Latest Version: 22.01.2023
 --
 -- Design Unit: Pattern Generator (Entity)
 --

@@ -1,0 +1,57 @@
+#-----------------------------------------------------------
+# Vivado v2016.1 (64-bit)
+# SW Build 1538259 on Fri Apr  8 15:45:27 MDT 2016
+# IP Build 1537824 on Fri Apr  8 04:28:57 MDT 2016
+# Start of session at: Fri Jan 20 14:10:13 2023
+# Process ID: 21872
+# Current directory: C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/managed_ip_project
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent15232 C:\Users\Michael\Desktop\Elektronik\Wintersemester_2022\CHIP\vga_controller\generate\managed_ip_project\managed_ip_project.xpr
+# Log file: C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/managed_ip_project/vivado.log
+# Journal file: C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/managed_ip_project\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/managed_ip_project/managed_ip_project.xpr
+INFO: [ProjectBase 1-489] The host OS only allows 260 characters in a normal path. The project is stored in a path with more than 80 characters. If you experience issues with IP, Block Designs, or files not being found, please consider moving the project to a location with a shorter path. Alternately consider using the OS subst command to map part of the path to a drive letter.
+Current project path is 'C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/managed_ip_project'
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2016.1/data/ip'.
+INFO: [Device 21-403] Loading part xc7a35tcpg236-1
+WARNING: [IP_Flow 19-4067] Ignoring invalid widget type specified checkbox.Providing a default widget
+WARNING: [IP_Flow 19-4067] Ignoring invalid widget type specified checkbox.Providing a default widget
+delete_ip_run [get_files -of_objects [get_fileset rom_mem_1] C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_1/rom_mem_1.xci]
+INFO: [Project 1-386] Moving file 'C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_1/rom_mem_1.xci' from fileset 'rom_mem_1' to fileset 'sources_1'.
+set_property generate_synth_checkpoint false [get_files  C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_1/rom_mem_1.xci]
+delete_ip_run [get_files -of_objects [get_fileset rom_mem_2] C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_2/rom_mem_2.xci]
+INFO: [Project 1-386] Moving file 'C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_2/rom_mem_2.xci' from fileset 'rom_mem_2' to fileset 'sources_1'.
+set_property generate_synth_checkpoint false [get_files  C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_2/rom_mem_2.xci]
+delete_ip_run [get_files -of_objects [get_fileset clk_25Mhz] C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/clk_25Mhz/clk_25Mhz.xci]
+INFO: [Project 1-386] Moving file 'C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/clk_25Mhz/clk_25Mhz.xci' from fileset 'clk_25Mhz' to fileset 'sources_1'.
+set_property generate_synth_checkpoint false [get_files  C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/clk_25Mhz/clk_25Mhz.xci]
+generate_target all [get_files  {C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_1/rom_mem_1.xci C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_2/rom_mem_2.xci C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/clk_25Mhz/clk_25Mhz.xci}]
+INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'rom_mem_1'...
+INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'rom_mem_1'...
+INFO: [IP_Flow 19-1686] Generating 'Simulation' target for IP 'rom_mem_1'...
+INFO: [IP_Flow 19-1686] Generating 'Miscellaneous' target for IP 'rom_mem_1'...
+INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'rom_mem_1'...
+INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'rom_mem_2'...
+INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'rom_mem_2'...
+INFO: [IP_Flow 19-1686] Generating 'Simulation' target for IP 'rom_mem_2'...
+INFO: [IP_Flow 19-1686] Generating 'Miscellaneous' target for IP 'rom_mem_2'...
+INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'rom_mem_2'...
+INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'clk_25Mhz'...
+INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'clk_25Mhz'...
+INFO: [IP_Flow 19-1686] Generating 'Simulation' target for IP 'clk_25Mhz'...
+INFO: [IP_Flow 19-1686] Generating 'Implementation' target for IP 'clk_25Mhz'...
+INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'clk_25Mhz'...
+generate_target: Time (s): cpu = 00:00:04 ; elapsed = 00:00:06 . Memory (MB): peak = 1011.793 ; gain = 0.000
+export_ip_user_files -of_objects [get_files C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_1/rom_mem_1.xci] -no_script -force -quiet
+export_ip_user_files -of_objects [get_files C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_2/rom_mem_2.xci] -no_script -force -quiet
+export_ip_user_files -of_objects [get_files C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/clk_25Mhz/clk_25Mhz.xci] -no_script -force -quiet
+export_simulation -of_objects [get_files C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_1/rom_mem_1.xci] -directory C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/ip_user_files/sim_scripts -ip_user_files_dir C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/ip_user_files -ipstatic_source_dir C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/ip_user_files/ipstatic -force -quiet
+export_simulation -of_objects [get_files C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_2/rom_mem_2.xci] -directory C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/ip_user_files/sim_scripts -ip_user_files_dir C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/ip_user_files -ipstatic_source_dir C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/ip_user_files/ipstatic -force -quiet
+export_simulation -of_objects [get_files C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/clk_25Mhz/clk_25Mhz.xci] -directory C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/ip_user_files/sim_scripts -ip_user_files_dir C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/ip_user_files -ipstatic_source_dir C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/ip_user_files/ipstatic -force -quiet
+exit
+INFO: [Common 17-206] Exiting Vivado at Fri Jan 20 14:17:23 2023...

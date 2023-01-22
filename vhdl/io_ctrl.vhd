@@ -26,7 +26,7 @@ entity io_ctrl is
 		reset_i 	: 	in 	std_logic; 						-- asynchronous reset
 		clk_25hz_i 		: 	in 	std_logic; 						-- 25 MHz system clock
 		pb_i 		:	in 	std_logic_vector (3 downto 0); 	-- 4 Push Buttons states
-		sw_i		: 	in	std_logic_vector (15 downto 0); -- 16 input switches	
+		sw_i		: 	in	std_logic_vector (2 downto 0); -- 16 input switches	
 		swsync_o	:	out std_logic_vector (2 downto 0);	-- 3 debounced switches
 		pbsync_o	:	out std_logic_vector (3 downto 0) 	-- 4 debounced push button
 		);

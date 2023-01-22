@@ -6,9 +6,9 @@
 --
 -- Date of Creation: 28.11.2022
 --
--- Version: V 1.0
+-- Version: V 2.0
 --
--- Date of Latest Version: 28.11.2022
+-- Date of Latest Version: 22.01.2023
 --
 -- Design Unit: Pattern Generator (Architecture)
 --
@@ -36,32 +36,44 @@ begin
 
 	p_pat_gen_1 : process (reset_i,clk_25hz_i)
 	
-		variable v_px_count : natural := 0;
+		variable v_px_count : natural range 0 to 39 := 0;
 	
 	begin
 		
 		if reset_i = '1' then
 			
-			s_red 	<=	(0 => '1', others => '0');
-			s_green <= 	(0 => '1', others => '0');
-			s_blue	<= 	(0 => '1', others => '0');
+			s_red 	<= (others => '0');
+			s_green <= (others => '0');
+			s_blue	<= (others => '0');
+			s_pat_gen_state <= RED;
+			v_px_count := 0;
 		
-		elsif clk_25hz_i = '1' then
+		elsif clk_25hz_i'event and clk_25hz_i = '1' then
 			
-			-- 40 pix per color with 2 pix of grace period between color switches (backporch - 2 pix = 46)
-			if h_sync_i = 46 or h_sync_i = 206 or h_sync_i = 366 or h_sync_i = 526 then
-				s_pat_gen_state <= RED;
-			elsif h_sync_i = 86 or h_sync_i = 246 or h_sync_i = 406 or h_sync_i = 566 then
-				s_pat_gen_state <= GREEN;
-			elsif h_sync_i = 126 or h_sync_i = 286 or h_sync_i = 446 or h_sync_i = 606 then
-				s_pat_gen_state <= BLUE;
-			elsif h_sync_i = 166 or h_sync_i = 326 or h_sync_i = 486 or h_sync_i = 646 then
-				s_pat_gen_state <= BLACK;
-			else
-				s_pat_gen_state <= s_pat_gen_state;
+			-- Switch state according to h_sync_i input signal
+			if h_sync_i > 0 and h_sync_i <= c_h_vis then
+				
+				if v_px_count = 39 then
+					case s_pat_gen_state is
+						when RED => 
+							s_pat_gen_state <= GREEN;
+						when GREEN =>
+							s_pat_gen_state <= BLUE;
+						when BLUE =>
+							s_pat_gen_state <= BLACK;
+						when BLACK =>
+							s_pat_gen_state <= RED;
+						when others =>
+							s_pat_gen_state <= BLACK;
+					end case;
+					v_px_count := 0;
+				else
+					v_px_count := v_px_count + 1;
+				end if;	
 			end if;
 			
-			-- change display color with moving h_sync_i increments
+			
+			-- change display color according to state machine
 			case s_pat_gen_state is
 			
 				when RED =>

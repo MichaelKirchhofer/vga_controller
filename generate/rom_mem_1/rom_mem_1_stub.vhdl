@@ -1,10 +1,10 @@
 -- Copyright 1986-2016 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2016.1 (win64) Build 1538259 Fri Apr  8 15:45:27 MDT 2016
--- Date        : Tue Jan 03 16:47:01 2023
+-- Date        : Sun Jan 22 21:01:05 2023
 -- Host        : DESKTOP-CTQMUAG running 64-bit major release  (build 9200)
 -- Command     : write_vhdl -force -mode synth_stub
---               c:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_1/rom_mem_1_stub.vhdl
+--               C:/Users/Michael/Desktop/Elektronik/Wintersemester_2022/CHIP/vga_controller/generate/rom_mem_1/rom_mem_1_stub.vhdl
 -- Design      : rom_mem_1
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7a35tcpg236-1

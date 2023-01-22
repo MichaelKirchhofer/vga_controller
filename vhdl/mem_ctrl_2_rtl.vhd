@@ -6,7 +6,7 @@
 --
 -- Date of Creation: 06.12.2022
 --
--- Version: V 1.0
+-- Version: V 1.1
 --
 -- Date of Latest Version: 13.12.2022
 --
@@ -28,7 +28,7 @@ architecture rtl of mem_ctrl_2 is
 	signal s_green : std_logic_vector (3 downto 0);
 	signal s_red : std_logic_vector (3 downto 0);
 	signal s_blue : std_logic_vector(3 downto 0);
-	signal s_rom_addr : std_logic_vector (15 downto 0);
+	signal s_rom_addr : std_logic_vector (13 downto 0);
 	signal s_rom_data : std_logic_vector (11 downto 0);
 	
 	constant c_last_rom_addr : natural := 9999;
@@ -39,24 +39,30 @@ begin
 	
 	variable v_rom_addr : natural range 0 to c_last_rom_addr;
 	
-	
 	begin
 		
 		if reset_i = '1' then
 			
 			s_red <= (others => '0');
-			s_green <= (others => '0');
+			s_green <= (others => '0');	
 			s_blue <= (others => '0');
 			s_rom_addr <= (others => '0');
 			s_rom_data <= (others => '0');
-		
-		elsif clk_25hz_i = '1' then
+			v_rom_addr := 0;
+			
+		elsif clk_25hz_i'event and clk_25hz_i = '1' then
 			
 			-- Sync signal indicates that the picture is currently requested to be displayed
 			if (h_sync_i >= x_pos_i and h_sync_i < (x_pos_i+c_pic_dim)) then
 				
 				if(v_sync_i >= y_pos_i and v_sync_i < (y_pos_i+c_pic_dim)) then
 					
+					--Reset address for rom memory at picture starting point
+					if (h_sync_i = x_pos_i and v_sync_i = y_pos_i)  then
+						v_rom_addr := 0;
+					end if;
+					
+					-- Reset address for rom memory at last rom address
 					if( v_rom_addr = c_last_rom_addr) then
 					
 						v_rom_addr := 0;
@@ -79,6 +85,7 @@ begin
 
 			end if;
 			
+			-- Drive out rom content to src multiplexer
 			s_rom_addr <= std_logic_vector(to_unsigned(v_rom_addr,s_rom_addr'length));
 			s_red <= rom_data_i (11 downto 8);
 			s_green <= rom_data_i (7 downto 4);

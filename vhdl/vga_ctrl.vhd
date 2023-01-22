@@ -8,12 +8,12 @@
 --
 -- Version: V 1.0
 --
--- Date of Latest Version: 13.12.2022
+-- Date of Latest Version: 19.01.2023
 --
 -- Design Unit: VGA Controller (Entity)
 --
--- Description: Controls all screen sync signals and drives out the color signals
--- from the multiplexer to the vga screen. 
+-- Description: Controls all screen sync signals and drives out the color 
+-- signals from the multiplexer to the vga screen. 
 --
 -------------------------------------------------------------------------------
 

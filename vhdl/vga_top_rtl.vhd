@@ -6,14 +6,13 @@
 --
 -- Date of Creation: 03.01.2023
 --
--- Version: V 1.0
+-- Version: V 2.0
 --
--- Date of Latest Version: 03.01.2023
+-- Date of Latest Version: 19.01.2023
 --
--- Design Unit: ROM Controller 1 (Architecture)
+-- Design Unit: VGA Top Level Unit
 --
--- Description: The ROM Controller fetches the picture pixel data from the ROM1
--- Block of the FPGA Board
+-- Description: Wiring and instantiation of all components of the VGA controller
 --
 -------------------------------------------------------------------------------
 
@@ -46,7 +45,7 @@ architecture rtl of vga_top is
 		clk_25hz_i 		: 	in 	std_logic; 				
 		reset_i 	: 	in 	std_logic; 					
 		pb_i 		:	in 	std_logic_vector (3 downto 0); 
-		sw_i		: 	in	std_logic_vector (15 downto 0);
+		sw_i		: 	in	std_logic_vector (2 downto 0);
 		swsync_o	:	out std_logic_vector (2 downto 0);
 		pbsync_o	:	out std_logic_vector (3 downto 0) 
 	);
@@ -59,7 +58,7 @@ architecture rtl of vga_top is
 		rom_data_i : in std_logic_vector (11 downto 0);
 		h_sync_i : in natural range 0 to (c_h_frame_duration-1);
 		v_sync_i : in natural range 0 to (c_v_frame_duration-1);
-		rom_addr_o : out std_logic_vector (15 downto 0);
+		rom_addr_o : out std_logic_vector (16 downto 0);
 		red_o : out std_logic_vector (3 downto 0);
 		green_o : out std_logic_vector (3 downto 0);
 		blue_o : out std_logic_vector (3 downto 0) 
@@ -73,9 +72,9 @@ architecture rtl of vga_top is
 		rom_data_i : in std_logic_vector (11 downto 0);
 		h_sync_i : in natural range 0 to (c_h_frame_duration-1);
 		v_sync_i : in natural range 0 to (c_v_frame_duration-1);
-		x_pos_i : in natural range 0 to (c_h_vis-1);
-		y_pos_i : in natural range 0 to (c_v_vis-1);
-		rom_addr_o : out std_logic_vector (15 downto 0);
+		x_pos_i : in natural;
+		y_pos_i : in natural;
+		rom_addr_o : out std_logic_vector (13 downto 0);
 		red_o : out std_logic_vector (3 downto 0);
 		green_o : out std_logic_vector (3 downto 0);
 		blue_o : out std_logic_vector (3 downto 0) 
@@ -133,25 +132,30 @@ architecture rtl of vga_top is
 	);
 	end component pat_gen_2;
 	
-	component rom_1
+	component rom_mem_1
+	port(
+		clka : in STD_LOGIC;
+	    addra : in STD_LOGIC_VECTOR ( 16 downto 0 );
+	    douta : out STD_LOGIC_VECTOR ( 11 downto 0 )
+	);
+	end component rom_mem_1;
+	
+	component rom_mem_2
 	port(
 		clka : in STD_LOGIC;
 	    addra : in STD_LOGIC_VECTOR ( 13 downto 0 );
 	    douta : out STD_LOGIC_VECTOR ( 11 downto 0 )
 	);
-	component rom_2
-	port(
-		clka : in STD_LOGIC;
-	    addra : in STD_LOGIC_VECTOR ( 13 downto 0 );
-	    douta : out STD_LOGIC_VECTOR ( 11 downto 0 )
-	);
-	component clk_gen
+	end component rom_mem_2;
+	
+	component clk_25Mhz
 	port(
 		clk_in1  : in  std_logic;
 	    clk_out1 : out std_logic;
 	    reset    : in  std_logic;
 	    locked   : out std_logic 
 	);
+	end component clk_25Mhz;
 	
 --------------------------------------------------------------
 --vga_top unit to all other units signals
@@ -205,18 +209,18 @@ architecture rtl of vga_top is
 --------------------------------------------------------------
 --src mux to mem_ctrl_2 unit signals
 --------------------------------------------------------------
-	signal s_x_pos :  natural range 0 to c_h_vis - 100;
-	signal s_y_pos :  natural range 0 to c_v_vis - 100;
+	signal s_x_pos : natural;
+	signal s_y_pos : natural;
 --------------------------------------------------------------
 --mem_ctrl_1 signals
 --------------------------------------------------------------		
-	signal s_rom_addr_1 : std_logic_vector (15 downto 0);
-	signal s_rom_data_1 : std_logic (11 downto 0);
+	signal s_rom_addr_1 : std_logic_vector (16 downto 0);
+	signal s_rom_data_1 : std_logic_vector (11 downto 0);
 --------------------------------------------------------------
 --mem_ctrl_2 signals
 --------------------------------------------------------------		
-	signal s_rom_addr_2 : std_logic_vector (15 downto 0);
-	signal s_rom_data_2 : std_logic (11 downto 0);
+	signal s_rom_addr_2 : std_logic_vector (13 downto 0);
+	signal s_rom_data_2 : std_logic_vector (11 downto 0);
 
 begin
 	
@@ -230,11 +234,11 @@ begin
 		blue_i 		=> s_to_ctrl_blue,
 		h_sync_o	=> s_h_sync,
 		v_sync_o	=> s_v_sync,
-		red_o 		=> s_to_screen_red,
-		green_o 	=> s_to_screen_green,
-		blue_o 		=> s_to_screen_blue,
-		h_sync_flag_o => s_h_sync_flag,
-		v_sync_flag_o => s_v_sync_flag
+		red_o 		=> red_o,
+		green_o 	=> green_o,
+		blue_o 		=> blue_o,
+		h_sync_flag_o => h_sync_flag_o,
+		v_sync_flag_o => v_sync_flag_o
 	);
 	
 	-- src_mux instance
@@ -251,7 +255,7 @@ begin
 		b_pat_gen_1_i => s_b_pat_gen_1,
 		r_pat_gen_2_i => s_r_pat_gen_2,
 		g_pat_gen_2_i => s_g_pat_gen_2,
-		b_pat_gen_2_i => s_b_pat_gen_2
+		b_pat_gen_2_i => s_b_pat_gen_2,
 		r_mem_ctrl_1_i => s_r_mem_ctrl_1,
 		g_mem_ctrl_1_i => s_g_mem_ctrl_1,
 		b_mem_ctrl_1_i => s_b_mem_ctrl_1,
@@ -262,7 +266,7 @@ begin
 		green_o => s_to_ctrl_green,
 		blue_o 	=> s_to_ctrl_blue,
 		x_pos_o => s_x_pos,
-		y_pos_o => s_y_pos,
+		y_pos_o => s_y_pos
 	);
 	
 	--io_ctrl instance
@@ -331,7 +335,7 @@ begin
 	);
 	
 	-- rom_1 instance
-	i_rom_1 : rom_1
+	i_rom_mem_1 : rom_mem_1
 	port map(
 		clka => s_clk_25hz,
 		addra => s_rom_addr_1,
@@ -339,7 +343,7 @@ begin
 	);
 	
 	-- rom_2 instance
-	i_rom_2 : rom_2
+	i_rom_mem_2 : rom_mem_2
 	port map (
 		clka => s_clk_25hz,
 		addra => s_rom_addr_2,
@@ -347,7 +351,7 @@ begin
 	);
 	
 	-- clk_gen instance
-	i_clk_gen : clk_gen
+	i_clk_25Mhz : clk_25Mhz
 	port map(
 		clk_in1 => fpga_clk_i,
 		clk_out1 => s_clk_25hz,
